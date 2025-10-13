@@ -12,6 +12,10 @@ import { ProduceCard } from "@/components/produce-card";
 import { OrderCard } from "@/components/order-card";
 import { acceptOrder, rejectOrder } from "@/app/actions/orders";
 import { toast } from "sonner";
+import { RealTimeJobs } from "@/components/real-time-jobs";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 async function handleAcceptOrder(formData: FormData) {
   "use server";
@@ -48,6 +52,7 @@ export default async function FarmerDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <RealTimeJobs />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>

@@ -10,6 +10,10 @@ import Link from "next/link";
 import { MapPin, Package, Navigation } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RealTimeJobs } from "@/components/real-time-jobs";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function TransporterDashboard() {
   const session = await auth.api.getSession({
@@ -34,10 +38,19 @@ export default async function TransporterDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <RealTimeJobs />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Transporter Dashboard</h1>
-          <p className="text-muted-foreground">Manage your delivery jobs</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Transporter Dashboard</h1>
+              <p className="text-muted-foreground">Manage your delivery jobs</p>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              <span>Live updates</span>
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="available" className="space-y-6">

@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderCard } from "@/components/order-card";
+import { RealTimeJobs } from "@/components/real-time-jobs";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function BuyerDashboard() {
   const session = await auth.api.getSession({
@@ -28,6 +32,7 @@ export default async function BuyerDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      <RealTimeJobs />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>

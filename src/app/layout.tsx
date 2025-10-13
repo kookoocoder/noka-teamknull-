@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sunx",
-  description: "Sunx - Secure Authentication",
+  title: "noka",
+  description: "noka - Secure Authentication",
 };
 
 export default function RootLayout({

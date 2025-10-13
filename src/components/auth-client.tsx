@@ -18,7 +18,7 @@ export default function AuthClient() {
         <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-2xl">
           <CardHeader className="pb-4">
             <CardTitle className="text-center text-2xl font-bold text-foreground mb-2">
-              Welcome to Sunx
+              Welcome to noka
             </CardTitle>
             
             {/* Tab Navigation */}

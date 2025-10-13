@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
-import { Bell, Package, ShoppingCart, Truck, Home } from "lucide-react";
-import { getUnreadCount } from "@/lib/notifications";
+import { Package, ShoppingCart, Truck, Home } from "lucide-react";
+import { RealTimeNotifications } from "@/components/real-time-notifications";
 
 export async function Navbar() {
   const session = await auth.api.getSession({
@@ -14,8 +14,6 @@ export async function Navbar() {
   if (!session) {
     return null;
   }
-
-  const unreadCount = await getUnreadCount(session.user.id);
 
   const roleConfig = {
     FARMER: {
@@ -65,16 +63,7 @@ export async function Navbar() {
               </Link>
             )}
             
-            <Link href="/notifications" className="relative">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
+            <RealTimeNotifications userId={session.user.id} />
 
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground hidden sm:block">
