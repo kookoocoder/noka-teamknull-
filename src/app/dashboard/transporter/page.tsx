@@ -86,16 +86,25 @@ export default async function TransporterDashboard() {
                         <span>{job.order.quantity} kg</span>
                       </div>
 
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <div className="font-medium">Pickup: {job.order.listing.location}</div>
-                          <div className="text-muted-foreground">Deliver to: {job.order.buyer.address || "Address on file"}</div>
+                      <div className="flex items-start gap-2 text-sm">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <div className="space-y-1">
+                          <div>
+                            <span className="font-medium">From: </span>
+                            <span>{job.order.listing.farmer.name}</span>
+                            {job.order.listing.location ? (
+                              <span className="text-muted-foreground"> — {job.order.listing.location}</span>
+                            ) : null}
+                          </div>
+                          <div>
+                            <span className="font-medium">To: </span>
+                            <span>{job.order.buyer.name}</span>
+                            {" "}
+                            <span className="text-muted-foreground">
+                              — {job.order.buyer.address || "Address on file"}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-
-                      <div className="text-sm text-muted-foreground">
-                        <span className="font-medium">Farmer:</span> {job.order.listing.farmer.name}
                       </div>
                     </CardContent>
                     <CardFooter>
@@ -135,6 +144,25 @@ export default async function TransporterDashboard() {
                         <span>{shipment.order.quantity} kg</span>
                       </div>
 
+                      <div className="flex items-start gap-2 text-sm">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <div className="space-y-1">
+                          <div>
+                            <span className="font-medium">From: </span>
+                            <span>{shipment.order.listing.farmer.name}</span>
+                            {shipment.order.listing.location ? (
+                              <span className="text-muted-foreground"> — {shipment.order.listing.location}</span>
+                            ) : null}
+                          </div>
+                          <div>
+                            <span className="font-medium">To: </span>
+                            <span>{shipment.order.buyer.name}</span>
+                            {" "}
+                            <span className="text-muted-foreground">— {shipment.order.deliveryAddress}</span>
+                          </div>
+                        </div>
+                      </div>
+
                       {shipment.currentLocation && (
                         <div className="flex items-center gap-2 text-sm">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -169,10 +197,28 @@ export default async function TransporterDashboard() {
                         {shipment.order.listing.cropType}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-3">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Package className="h-4 w-4" />
                         <span>{shipment.order.quantity} kg</span>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm">
+                        <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <div className="space-y-1">
+                          <div>
+                            <span className="font-medium">From: </span>
+                            <span>{shipment.order.listing.farmer.name}</span>
+                            {shipment.order.listing.location ? (
+                              <span className="text-muted-foreground"> — {shipment.order.listing.location}</span>
+                            ) : null}
+                          </div>
+                          <div>
+                            <span className="font-medium">To: </span>
+                            <span>{shipment.order.buyer.name}</span>
+                            {" "}
+                            <span className="text-muted-foreground">— {shipment.order.deliveryAddress}</span>
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                     <CardFooter>
