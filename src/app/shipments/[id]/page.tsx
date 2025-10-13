@@ -112,8 +112,8 @@ export default async function ShipmentDetailPage({
                     return (
                       <div
                         key={log.id}
-                        className={`p-4 rounded-lg border ${
-                          hasWarning ? "bg-storage-warning/10 border-storage-warning" : "bg-muted/30"
+                        className={`p-4 rounded-md border ${
+                          hasWarning ? "bg-storage-warning/10 border-storage-warning" : "bg-card"
                         }`}
                       >
                         <div className="flex justify-between items-start mb-2">

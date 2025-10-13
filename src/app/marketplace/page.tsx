@@ -72,7 +72,7 @@ export default async function MarketplacePage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-muted/30 rounded-lg">
+          <div className="text-center py-8 bg-card rounded-md border">
             <p className="text-muted-foreground">
               No produce available at the moment. Check back later!
             </p>

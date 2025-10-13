@@ -110,7 +110,7 @@ export default async function TransporterDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-muted/30 rounded-lg">
+              <div className="text-center py-8 bg-card rounded-md border">
                 <p className="text-muted-foreground">No available jobs at the moment.</p>
               </div>
             )}
@@ -153,7 +153,7 @@ export default async function TransporterDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-muted/30 rounded-lg">
+              <div className="text-center py-8 bg-card rounded-md border">
                 <p className="text-muted-foreground">No active shipments.</p>
               </div>
             )}
@@ -186,7 +186,7 @@ export default async function TransporterDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-muted/30 rounded-lg">
+              <div className="text-center py-8 bg-card rounded-md border">
                 <p className="text-muted-foreground">No completed shipments yet.</p>
               </div>
             )}

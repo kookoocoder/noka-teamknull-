@@ -49,7 +49,7 @@ export default async function LogStoragePage({
           </p>
         </div>
 
-        <div className="bg-muted/30 rounded-lg p-4 mb-6">
+        <div className="bg-card rounded-md border p-4 mb-6">
           <p className="text-sm text-muted-foreground">
             <strong>Note:</strong> Temperatures above 10°C will trigger alerts to all parties. Ensure accurate readings to maintain produce quality.
           </p>

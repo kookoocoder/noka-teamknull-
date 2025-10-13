@@ -77,7 +77,7 @@ export default async function BuyerDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-muted/30 rounded-lg">
+              <div className="text-center py-8 bg-card rounded-md border">
                 <p className="text-muted-foreground">No pending payments.</p>
               </div>
             )}
@@ -107,7 +107,7 @@ export default async function BuyerDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-muted/30 rounded-lg">
+              <div className="text-center py-8 bg-card rounded-md border">
                 <p className="text-muted-foreground">No active orders.</p>
               </div>
             )}
@@ -133,7 +133,7 @@ export default async function BuyerDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-muted/30 rounded-lg">
+              <div className="text-center py-8 bg-card rounded-md border">
                 <p className="text-muted-foreground">No completed orders yet.</p>
               </div>
             )}

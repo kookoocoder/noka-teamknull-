@@ -76,8 +76,8 @@ export default function ResetPasswordClient() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4">
-        <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-2xl max-w-md w-full">
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
+        <Card className="shadow-sm max-w-md w-full">
           <CardHeader>
             <CardTitle className="text-center text-2xl font-bold text-foreground">
               Reset Error
@@ -113,8 +113,8 @@ export default function ResetPasswordClient() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4">
-        <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-2xl max-w-md w-full">
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
+        <Card className="shadow-sm max-w-md w-full">
           <CardHeader>
             <CardTitle className="text-center text-2xl font-bold text-foreground flex items-center justify-center gap-2">
               <CheckCircle className="text-green-500" size={24} />
@@ -142,8 +142,8 @@ export default function ResetPasswordClient() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4">
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-2xl max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center bg-background p-6">
+      <Card className="shadow-sm max-w-md w-full">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold text-foreground">
             Reset Password

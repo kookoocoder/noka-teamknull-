@@ -43,7 +43,7 @@ export async function Navbar() {
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="flex items-center gap-2">
               <Package className="h-6 w-6" />
-              <span className="text-xl font-bold">AgriTrack</span>
+              <span className="text-xl font-bold">Noka</span>
             </Link>
             
             {config && (

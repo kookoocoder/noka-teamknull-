@@ -73,7 +73,8 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  /* Soft page background for subtle contrast against white cards */
+  --background: oklch(0.985 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -179,5 +180,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Compact, white, old-school dashboard feel */
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.2 0 0);
+    --border: oklch(0.9 0 0);
   }
 }

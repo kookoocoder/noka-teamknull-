@@ -13,9 +13,9 @@ export default function AuthClient() {
   const [mode, setMode] = useState<AuthMode>("signin");
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-secondary to-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <div className="w-full max-w-md">
-        <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-2xl">
+        <Card className="shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="text-center text-2xl font-bold text-foreground mb-2">
               Welcome to noka

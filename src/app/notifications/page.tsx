@@ -76,7 +76,7 @@ export default async function NotificationsPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 bg-muted/30 rounded-lg">
+          <div className="text-center py-8 bg-card rounded-md border">
             <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground">No notifications yet.</p>
           </div>
