@@ -75,7 +75,7 @@ export default async function TransporterDashboard() {
                     <CardHeader>
                       <div className="flex justify-between items-start">
                         <CardTitle className="text-lg">
-                          {job.order.listing.cropType}
+                          {job.listing.cropType}
                         </CardTitle>
                         <StatusBadge status={job.status} />
                       </div>
@@ -83,7 +83,7 @@ export default async function TransporterDashboard() {
                     <CardContent className="space-y-3">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Package className="h-4 w-4" />
-                        <span>{job.order.quantity} kg</span>
+                        <span>{job.quantity} kg</span>
                       </div>
 
                       <div className="flex items-start gap-2 text-sm">
@@ -91,27 +91,32 @@ export default async function TransporterDashboard() {
                         <div className="space-y-1">
                           <div>
                             <span className="font-medium">From: </span>
-                            <span>{job.order.listing.farmer.name}</span>
-                            {job.order.listing.location ? (
-                              <span className="text-muted-foreground"> — {job.order.listing.location}</span>
+                            <span>{job.listing.farmer.name}</span>
+                            {job.listing.location ? (
+                              <span className="text-muted-foreground"> — {job.listing.location}</span>
                             ) : null}
                           </div>
                           <div>
                             <span className="font-medium">To: </span>
-                            <span>{job.order.buyer.name}</span>
+                            <span>{job.buyer.name}</span>
                             {" "}
                             <span className="text-muted-foreground">
-                              — {job.order.buyer.address || "Address on file"}
+                              — {job.buyer.address || job.deliveryAddress}
                             </span>
                           </div>
                         </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">Total Price:</span>
+                        <span className="text-muted-foreground">₹{job.totalPrice.toFixed(2)}</span>
                       </div>
                     </CardContent>
                     <CardFooter>
                       <Link href={`/jobs/${job.id}`} className="w-full">
                         <Button className="w-full">
                           <Navigation className="h-4 w-4 mr-2" />
-                          View Job Details
+                          Accept Job
                         </Button>
                       </Link>
                     </CardFooter>

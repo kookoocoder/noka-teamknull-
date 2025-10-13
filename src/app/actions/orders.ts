@@ -6,7 +6,6 @@ import { headers } from "next/headers";
 import { OrderSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/lib/notifications";
-import { autoMatchTransporter } from "@/lib/matching";
 
 export async function placeOrder(data: {
   listingId: string;
@@ -94,47 +93,19 @@ export async function acceptOrder(orderId: string) {
       data: { status: "ACCEPTED" },
     });
 
-    // Try to auto-match transporter
-    const transporterId = await autoMatchTransporter(orderId);
-
-    if (transporterId) {
-      // Create shipment
-      const shipment = await prisma.shipment.create({
-        data: {
-          orderId,
-          transporterId,
-        },
-      });
-
-      // Notify transporter
-      await createNotification(
-        transporterId,
-        "New Job Available",
-        `You have been matched with a delivery job for ${order.quantity}kg of ${order.listing.cropType}`,
-        `/jobs/${shipment.id}`
-      );
-
-      // Notify buyer
-      await createNotification(
-        order.buyerId,
-        "Order Accepted",
-        `Your order has been accepted and a transporter has been assigned`,
-        `/shipments/${shipment.id}`
-      );
-    } else {
-      // Notify buyer (no transporter yet)
-      await createNotification(
-        order.buyerId,
-        "Order Accepted",
-        `Your order has been accepted. Awaiting transporter assignment.`,
-        `/orders/${orderId}`
-      );
-    }
+    // Notify buyer that order is accepted and waiting for transporter
+    await createNotification(
+      order.buyerId,
+      "Order Accepted",
+      `Your order has been accepted. Transporters can now pick up this job.`,
+      `/orders/${orderId}`
+    );
 
     revalidatePath("/dashboard/farmer");
+    revalidatePath("/dashboard/transporter");
     revalidatePath("/orders");
 
-    return { success: true, order: updatedOrder, transporterId };
+    return { success: true, order: updatedOrder };
   } catch (error) {
     console.error("Error accepting order:", error);
     return { success: false, error: "Failed to accept order" };

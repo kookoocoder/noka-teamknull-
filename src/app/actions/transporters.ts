@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/lib/notifications";
 
-export async function acceptJob(shipmentId: string) {
+export async function acceptJob(orderId: string) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -16,44 +16,66 @@ export async function acceptJob(shipmentId: string) {
       return { success: false, error: "Unauthorized" };
     }
 
-    const shipment = await prisma.shipment.findUnique({
-      where: { id: shipmentId },
+    // Check if order exists and is available
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
       include: {
-        order: {
+        listing: {
           include: {
-            listing: {
-              include: {
-                farmer: true,
-              },
-            },
-            buyer: true,
+            farmer: true,
           },
         },
+        buyer: true,
+        shipment: true,
       },
     });
 
-    if (!shipment || shipment.transporterId !== session.user.id) {
-      return { success: false, error: "Unauthorized or job already assigned" };
+    if (!order) {
+      return { success: false, error: "Order not found" };
     }
 
-    // Job is already assigned to this transporter, just confirm acceptance
-    // Notify farmer and buyer
+    if (order.status !== "ACCEPTED") {
+      return { success: false, error: "Order is not available for transport" };
+    }
+
+    if (order.shipment) {
+      return { success: false, error: "Job already taken by another transporter" };
+    }
+
+    // Create shipment with this transporter
+    const shipment = await prisma.shipment.create({
+      data: {
+        orderId,
+        transporterId: session.user.id,
+      },
+    });
+
+    // Update order status to confirmed
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: "CONFIRMED" },
+    });
+
+    // Notify farmer
     await createNotification(
-      shipment.order.listing.farmerId,
-      "Transporter Confirmed",
-      `Transporter has confirmed the job for ${shipment.order.quantity}kg of ${shipment.order.listing.cropType}`,
-      `/shipments/${shipmentId}`
+      order.listing.farmerId,
+      "Transporter Assigned",
+      `${session.user.name} has accepted the delivery job for ${order.quantity}kg of ${order.listing.cropType}`,
+      `/shipments/${shipment.id}`
     );
 
+    // Notify buyer
     await createNotification(
-      shipment.order.buyerId,
-      "Transporter Confirmed",
-      "Your shipment is ready to be picked up",
-      `/shipments/${shipmentId}`
+      order.buyerId,
+      "Transporter Assigned",
+      `A transporter has been assigned to your order. Your shipment will be picked up soon.`,
+      `/shipments/${shipment.id}`
     );
 
     revalidatePath("/dashboard/transporter");
-    revalidatePath(`/jobs/${shipmentId}`);
+    revalidatePath("/dashboard/farmer");
+    revalidatePath("/dashboard/buyer");
+    revalidatePath(`/jobs/${shipment.id}`);
 
     return { success: true, shipment };
   } catch (error) {
@@ -124,34 +146,30 @@ export async function getAvailableJobs() {
       return { success: false, error: "Unauthorized" };
     }
 
-    // Get shipments assigned to this transporter that are still pending
-    const jobs = await prisma.shipment.findMany({
+    // Get accepted orders that don't have shipments yet
+    const jobs = await prisma.order.findMany({
       where: {
-        transporterId: session.user.id,
-        status: "PENDING",
+        status: "ACCEPTED",
+        shipment: null, // No shipment assigned yet
       },
       include: {
-        order: {
+        listing: {
           include: {
-            listing: {
-              include: {
-                farmer: {
-                  select: {
-                    id: true,
-                    name: true,
-                    location: true,
-                    phone: true,
-                  },
-                },
-              },
-            },
-            buyer: {
+            farmer: {
               select: {
                 id: true,
                 name: true,
-                address: true,
+                location: true,
+                phone: true,
               },
             },
+          },
+        },
+        buyer: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
           },
         },
       },
