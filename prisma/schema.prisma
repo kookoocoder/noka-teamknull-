@@ -1,0 +1,221 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  FARMER
+  BUYER
+  TRANSPORTER
+}
+
+model User {
+  id                String             @id @default(uuid())
+  name              String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  email             String
+  emailVerified     Boolean
+  image             String?
+  role              UserRole?
+  phone             String?
+  location          String?
+  address           String?
+  sessions          Session[]
+  accounts          Account[]
+  produceListings   ProduceListing[]
+  orders            Order[]
+  assignedShipments Shipment[]
+  transporterProfile TransporterProfile?
+  ratingsGiven      Rating[]           @relation("RatingsGiven")
+  ratingsReceived   Rating[]           @relation("RatingsReceived")
+  notifications     Notification[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+enum ProduceStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  EXPIRED
+}
+
+model ProduceListing {
+  id          String        @id @default(uuid())
+  farmerId    String
+  farmer      User          @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  cropType    String
+  quantity    Float
+  pricePerKg  Float
+  harvestDate DateTime
+  location    String
+  status      ProduceStatus @default(AVAILABLE)
+  images      String?
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  orders      Order[]
+
+  @@map("produce_listing")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  ACCEPTED
+  REJECTED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+model Order {
+  id                  String         @id @default(uuid())
+  listingId           String
+  listing             ProduceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyerId             String
+  buyer               User           @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  quantity            Float
+  totalPrice          Float
+  deliveryAddress     String
+  status              OrderStatus    @default(PENDING)
+  notes               String?
+  expectedDeliveryDate DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  shipment            Shipment?
+
+  @@map("order")
+}
+
+enum ShipmentStatus {
+  PENDING
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+}
+
+model Shipment {
+  id              String          @id @default(uuid())
+  orderId         String          @unique
+  order           Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  transporterId   String
+  transporter     User            @relation(fields: [transporterId], references: [id], onDelete: Cascade)
+  pickupTime      DateTime?
+  deliveryTime    DateTime?
+  status          ShipmentStatus  @default(PENDING)
+  currentLocation String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  storageLogs     StorageLog[]
+  ratings         Rating[]
+
+  @@map("shipment")
+}
+
+model StorageLog {
+  id          String   @id @default(uuid())
+  shipmentId  String
+  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  temperature Float?
+  humidity    Float?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@map("storage_log")
+}
+
+model TransporterProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleType     String
+  maxCapacity     Float
+  currentLocation String?
+  isAvailable     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("transporter_profile")
+}
+
+model Rating {
+  id         String   @id @default(uuid())
+  fromUserId String
+  fromUser   User     @relation("RatingsGiven", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUserId   String
+  toUser     User     @relation("RatingsReceived", fields: [toUserId], references: [id], onDelete: Cascade)
+  shipmentId String
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  score      Int
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  @@map("rating")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@map("notification")
+}
