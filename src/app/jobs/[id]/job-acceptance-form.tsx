@@ -19,7 +19,7 @@ export default function JobAcceptanceForm({ orderId }: JobAcceptanceFormProps) {
     startTransition(async () => {
       const result = await acceptJob(orderId);
 
-      if (result.success) {
+      if (result.success && result.shipment) {
         toast.success("Job accepted successfully!");
         router.push(`/jobs/${result.shipment.id}`);
       } else {
