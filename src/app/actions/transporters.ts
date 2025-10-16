@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/lib/notifications";
+import { appendEvent, ensureActorHash } from "./provenance";
 
 export async function acceptJob(orderId: string) {
   try {
@@ -54,6 +55,16 @@ export async function acceptJob(orderId: string) {
     await prisma.order.update({
       where: { id: orderId },
       data: { status: "CONFIRMED" },
+    });
+
+    // Append SHIPMENT_CREATED event to provenance chain
+    const transporterHashId = await ensureActorHash(session.user.id);
+    await appendEvent(orderId, "SHIPMENT_CREATED", session.user.id, {
+      orderId,
+      shipmentId: shipment.id,
+      transporterPublicHashId: transporterHashId,
+      status: "PENDING",
+      at: new Date().toISOString(),
     });
 
     // Notify farmer
@@ -216,6 +227,16 @@ export async function manualAssignTransporter(orderId: string, transporterId: st
         orderId,
         transporterId,
       },
+    });
+
+    // Append SHIPMENT_CREATED event to provenance chain
+    const transporterHashId = await ensureActorHash(transporterId);
+    await appendEvent(orderId, "SHIPMENT_CREATED", transporterId, {
+      orderId,
+      shipmentId: shipment.id,
+      transporterPublicHashId: transporterHashId,
+      status: "PENDING",
+      at: new Date().toISOString(),
     });
 
     // Notify transporter

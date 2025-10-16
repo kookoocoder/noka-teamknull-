@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { OrderSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/lib/notifications";
+import { createChainForOrder, appendEvent } from "./provenance";
 
 export async function placeOrder(data: {
   listingId: string;
@@ -50,6 +51,14 @@ export async function placeOrder(data: {
       },
     });
 
+    // Create provenance chain (genesis event)
+    await createChainForOrder(order.id, listing.farmerId, session.user.id, listing.id, {
+      orderId: order.id,
+      quantity: validated.quantity,
+      totalPrice,
+      at: new Date().toISOString(),
+    });
+
     // Notify farmer
     await createNotification(
       listing.farmerId,
@@ -91,6 +100,13 @@ export async function acceptOrder(orderId: string) {
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data: { status: "ACCEPTED" },
+    });
+
+    // Append ORDER_ACCEPTED event to provenance chain
+    await appendEvent(orderId, "ORDER_ACCEPTED", session.user.id, {
+      orderId,
+      status: "ACCEPTED",
+      at: new Date().toISOString(),
     });
 
     // Notify buyer that order is accepted and waiting for transporter

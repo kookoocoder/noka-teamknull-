@@ -11,6 +11,7 @@ import { MapPin, Package, Navigation } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RealTimeJobs } from "@/components/real-time-jobs";
+import { VerifyPill } from "@/components/verify-pill";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -50,6 +51,7 @@ export default async function TransporterDashboard() {
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
               <span>Live updates</span>
             </div>
+            <VerifyPill />
           </div>
         </div>
 

@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/status-badge";
-import { MapPin, Package, User, Calendar, IndianRupee } from "lucide-react";
+import { MapPin, Package, User, Calendar, IndianRupee, QrCode } from "lucide-react";
+import { QR } from "@/components/ui/qr";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -176,6 +177,38 @@ export default async function OrderDetailPage({
               </CardContent>
             </Card>
           )}
+
+          {/* Provenance Chain */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <QrCode className="h-5 w-5" />
+                Product Provenance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Scan the complete product journey with full transparency from farm to delivery.
+              </p>
+              <div className="flex items-center gap-6 mb-4">
+                <div className="rounded border p-2 bg-white">
+                  <QR value={`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/scan/${order.id}`} />
+                </div>
+                <div className="text-sm text-muted-foreground break-all">
+                  <div className="font-medium text-foreground mb-1">Scan Link</div>
+                  <div className="font-mono text-xs">
+                    {(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000") + `/scan/${order.id}`}
+                  </div>
+                </div>
+              </div>
+              <Link href={`/scan/${order.id}`}>
+                <Button className="w-full" variant="outline">
+                  <QrCode className="h-4 w-4 mr-2" />
+                  View Provenance Chain
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
 
           <div className="flex gap-4">
             {order.status === "PENDING" && session.user.id === order.buyerId && (

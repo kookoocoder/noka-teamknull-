@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ProduceListingSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
+import { generateUniqueHashId } from "@/lib/provenance";
 
 export async function createProduce(data: {
   cropType: string;
@@ -26,6 +27,12 @@ export async function createProduce(data: {
 
     const validated = ProduceListingSchema.parse(data);
 
+    // Generate unique product hash ID
+    const productHashId = await generateUniqueHashId(
+      "PRODUCT",
+      `${validated.cropType}:${session.user.id}:${Date.now()}`
+    );
+
     const listing = await prisma.produceListing.create({
       data: {
         farmerId: session.user.id,
@@ -36,6 +43,7 @@ export async function createProduce(data: {
         location: validated.location,
         description: validated.description,
         images: validated.images,
+        productHashId,
       },
     });
 

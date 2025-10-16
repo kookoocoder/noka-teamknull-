@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/lib/notifications";
+import { appendEvent, ensureActorHash } from "./provenance";
 
 export async function updateShipmentStatus(
   shipmentId: string,
@@ -57,6 +58,19 @@ export async function updateShipmentStatus(
     const updated = await prisma.shipment.update({
       where: { id: shipmentId },
       data: updateData,
+    });
+
+    // Append shipment status update to provenance chain
+    const eventType = status === "DELIVERED" ? "DELIVERED" : "SHIPMENT_STATUS_UPDATED";
+    const transporterHashId = await ensureActorHash(session.user.id);
+
+    await appendEvent(shipment.orderId, eventType, session.user.id, {
+      orderId: shipment.orderId,
+      shipmentId,
+      transporterPublicHashId: transporterHashId,
+      status,
+      notes: currentLocation ? `Location: ${currentLocation}` : undefined,
+      at: new Date().toISOString(),
     });
 
     // Update order status

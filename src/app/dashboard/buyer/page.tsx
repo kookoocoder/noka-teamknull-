@@ -9,6 +9,7 @@ import { ShoppingCart } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderCard } from "@/components/order-card";
 import { RealTimeJobs } from "@/components/real-time-jobs";
+import { VerifyPill } from "@/components/verify-pill";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -45,6 +46,7 @@ export default async function BuyerDashboard() {
               Browse Marketplace
             </Button>
           </Link>
+          <VerifyPill />
         </div>
 
         <Tabs defaultValue="active" className="space-y-6">

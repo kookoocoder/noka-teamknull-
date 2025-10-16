@@ -1,14 +1,22 @@
 import { PrismaClient } from "../src/generated/prisma";
+import { generateUniqueHashId } from "../src/lib/provenance";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Starting seed...");
 
-  // Create users
+  // Generate hash IDs
+  const farmerHashId = await generateUniqueHashId("USER", "farmer@example.com");
+  const buyerHashId = await generateUniqueHashId("USER", "buyer@example.com");
+  const transporterHashId = await generateUniqueHashId("USER", "transporter@example.com");
+
+  // Create users with hash IDs
   const farmer = await prisma.user.upsert({
     where: { email: "farmer@example.com" },
-    update: {},
+    update: {
+      publicHashId: farmerHashId,
+    },
     create: {
       email: "farmer@example.com",
       name: "John Farmer",
@@ -17,6 +25,7 @@ async function main() {
       phone: "+91 9876543210",
       location: "Delhi",
       address: "123 Farm Lane, Delhi",
+      publicHashId: farmerHashId,
       accounts: {
         create: {
           id: "farmer-account",
@@ -32,7 +41,9 @@ async function main() {
 
   const buyer = await prisma.user.upsert({
     where: { email: "buyer@example.com" },
-    update: {},
+    update: {
+      publicHashId: buyerHashId,
+    },
     create: {
       email: "buyer@example.com",
       name: "Sarah Buyer",
@@ -41,6 +52,7 @@ async function main() {
       phone: "+91 9876543211",
       location: "Mumbai",
       address: "456 Market Street, Mumbai",
+      publicHashId: buyerHashId,
       accounts: {
         create: {
           id: "buyer-account",
@@ -56,7 +68,9 @@ async function main() {
 
   const transporter = await prisma.user.upsert({
     where: { email: "transporter@example.com" },
-    update: {},
+    update: {
+      publicHashId: transporterHashId,
+    },
     create: {
       email: "transporter@example.com",
       name: "Mike Transporter",
@@ -65,6 +79,7 @@ async function main() {
       phone: "+91 9876543212",
       location: "Delhi",
       address: "789 Highway Road, Delhi",
+      publicHashId: transporterHashId,
       accounts: {
         create: {
           id: "transporter-account",
@@ -91,7 +106,11 @@ async function main() {
     },
   });
 
-  // Create produce listings
+  // Create produce listings with product hash IDs
+  const tomatoHashId = await generateUniqueHashId("PRODUCT", `Tomatoes:${farmer.id}`);
+  const wheatHashId = await generateUniqueHashId("PRODUCT", `Wheat:${farmer.id}`);
+  const riceHashId = await generateUniqueHashId("PRODUCT", `Basmati Rice:${farmer.id}`);
+
   const tomatoListing = await prisma.produceListing.create({
     data: {
       farmerId: farmer.id,
@@ -102,6 +121,7 @@ async function main() {
       location: "Delhi",
       description: "Fresh, organic tomatoes. High quality produce perfect for wholesale.",
       status: "AVAILABLE",
+      productHashId: tomatoHashId,
     },
   });
 
@@ -115,6 +135,7 @@ async function main() {
       location: "Delhi",
       description: "Premium quality wheat grains.",
       status: "AVAILABLE",
+      productHashId: wheatHashId,
     },
   });
 
@@ -128,6 +149,7 @@ async function main() {
       location: "Delhi",
       description: "Premium Basmati rice, aromatic and long grain.",
       status: "AVAILABLE",
+      productHashId: riceHashId,
     },
   });
 

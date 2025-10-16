@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { StorageLogSchema } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/lib/notifications";
+import { appendEvent } from "./provenance";
 
 export async function createStorageLog(data: {
   shipmentId: string;
@@ -57,6 +58,16 @@ export async function createStorageLog(data: {
         humidity: validated.humidity,
         notes: validated.notes,
       },
+    });
+
+    // Append STORAGE_LOGGED event to provenance chain
+    await appendEvent(shipment.orderId, "STORAGE_LOGGED", session.user.id, {
+      orderId: shipment.orderId,
+      shipmentId: validated.shipmentId,
+      temperature: validated.temperature,
+      humidity: validated.humidity,
+      notes: validated.notes,
+      at: new Date().toISOString(),
     });
 
     // Check for unsafe conditions and send alerts

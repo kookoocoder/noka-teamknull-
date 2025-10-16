@@ -13,6 +13,7 @@ import { OrderCard } from "@/components/order-card";
 import { acceptOrder, rejectOrder } from "@/app/actions/orders";
 import { toast } from "sonner";
 import { RealTimeJobs } from "@/components/real-time-jobs";
+import { VerifyPill } from "@/components/verify-pill";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -65,6 +66,7 @@ export default async function FarmerDashboard() {
               List New Produce
             </Button>
           </Link>
+          <VerifyPill />
         </div>
 
         <Tabs defaultValue="listings" className="space-y-6">
