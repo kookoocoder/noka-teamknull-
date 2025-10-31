@@ -107,7 +107,7 @@ export async function updateShipmentStatus(
     );
 
     await createNotification(
-      shipment.order.listing.farmerId,
+      shipment.order.listing.farmer.id,
       "Shipment Update",
       statusMessage,
       `/shipments/${shipmentId}`
@@ -163,13 +163,18 @@ export async function getShipmentDetails(shipmentId: string) {
         order: {
           include: {
             listing: {
-              include: {
+              select: {
+                cropType: true,
+                location: true,
+                productHashId: true,
                 farmer: {
                   select: {
                     id: true,
                     name: true,
+                    email: true,
                     phone: true,
                     location: true,
+                    publicHashId: true,
                   },
                 },
               },
@@ -178,8 +183,17 @@ export async function getShipmentDetails(shipmentId: string) {
               select: {
                 id: true,
                 name: true,
+                email: true,
                 phone: true,
                 address: true,
+                publicHashId: true,
+              },
+            },
+            provenanceChain: {
+              include: {
+                events: {
+                  orderBy: { index: "asc" },
+                },
               },
             },
           },
@@ -188,7 +202,9 @@ export async function getShipmentDetails(shipmentId: string) {
           select: {
             id: true,
             name: true,
+            email: true,
             phone: true,
+            publicHashId: true,
             transporterProfile: true,
           },
         },
@@ -219,12 +235,18 @@ export async function getTransporterShipments(transporterId: string) {
         order: {
           include: {
             listing: {
+              select: {
+                cropType: true,
+                location: true,
+                productHashId: true,
+              },
               include: {
                 farmer: {
                   select: {
                     id: true,
                     name: true,
                     location: true,
+                    publicHashId: true,
                   },
                 },
               },
@@ -234,8 +256,16 @@ export async function getTransporterShipments(transporterId: string) {
                 id: true,
                 name: true,
                 address: true,
+                publicHashId: true,
               },
             },
+          },
+        },
+        transporter: {
+          select: {
+            id: true,
+            name: true,
+            publicHashId: true,
           },
         },
       },

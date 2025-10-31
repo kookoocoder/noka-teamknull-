@@ -1,131 +1,321 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { verifyChainByOrderId, verifyEventsOffline, getChain } from "@/app/actions/provenance";
-import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProvenanceTimeline } from "@/components/provenance-timeline";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Search, CheckCircle, XCircle, Package, User, Truck, MapPin, Calendar } from "lucide-react";
+
+interface VerifiedData {
+  type: "order_chain" | "chain_hash" | "product" | "user";
+  data: any;
+  verified?: boolean;
+}
 
 export default function VerifyPage() {
-  const [orderId, setOrderId] = useState("");
-  const [eventsJson, setEventsJson] = useState("");
-  const [result, setResult] = useState<string | null>(null);
-  const [orderIdForHash, setOrderIdForHash] = useState("");
-  const [expectedHash, setExpectedHash] = useState("");
-  const [chainInfo, setChainInfo] = useState<{ lastHash: string; events: number } | null>(null);
+  const [hash, setHash] = useState("");
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<VerifiedData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleVerifyByOrder() {
-    setLoading(true);
-    setResult(null);
-    try {
-      const res = await verifyChainByOrderId(orderId.trim());
-      if (!res.success) setResult(`❌ ${res.error}`);
-      else {
-        const details = res.details;
-        setChainInfo({ lastHash: details!.lastHash, events: details!.events.length });
-        setResult(res.verified ? "✅ Chain verified" : "⚠️ Chain integrity issue");
-      }
-    } catch (e: any) {
-      setResult(`❌ ${e?.message || "Failed"}`);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const verifyHash = async () => {
+    if (!hash.trim()) return;
 
-  async function handleVerifyOffline() {
     setLoading(true);
+    setError(null);
     setResult(null);
-    try {
-      const parsed = JSON.parse(eventsJson);
-      const res = await verifyEventsOffline(parsed);
-      setResult(res.verified ? `✅ Events verified. lastHash=${res.lastHash}` : `❌ ${res.error}`);
-    } catch (e: any) {
-      setResult(`❌ ${e?.message || "Invalid JSON"}`);
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  async function handleVerifyLastHash() {
-    setLoading(true);
-    setResult(null);
     try {
-      const data = await getChain(orderIdForHash.trim());
-      if (!data) {
-        setResult("❌ Chain not found for this order ID");
+      const response = await fetch(`/api/provenance/${encodeURIComponent(hash.trim())}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setResult(data);
       } else {
-        const matches = data.lastHash === expectedHash.trim();
-        setResult(matches ? "✅ Last hash matches stored chain" : `❌ Mismatch. Stored lastHash=${data.lastHash}`);
+        setError(data.error || "Hash not found");
       }
-    } catch (e: any) {
-      setResult(`❌ ${e?.message || "Failed"}`);
+    } catch (err) {
+      setError("Failed to verify hash");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold">Verify Provenance Manually</h1>
-
-        <Card className="p-6 space-y-3">
-          <h2 className="font-semibold">Verify by Order ID + Final Hash</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <Input value={orderIdForHash} onChange={(e) => setOrderIdForHash(e.target.value)} placeholder="Order ID" />
-            <Input value={expectedHash} onChange={(e) => setExpectedHash(e.target.value)} placeholder="Expected final hash" />
+  const renderUserInfo = (user: any) => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <User className="h-5 w-5" />
+          User Information
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium">Name</label>
+            <p className="text-sm text-muted-foreground">{user.name}</p>
           </div>
-          <Button onClick={handleVerifyLastHash} disabled={!orderIdForHash || !expectedHash || loading}>
-            {loading ? "Verifying..." : "Compare Final Hash"}
-          </Button>
-        </Card>
-
-        <Card className="p-6 space-y-3">
-          <h2 className="font-semibold">Verify by Order ID</h2>
-          <div className="flex gap-2">
-            <Input value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="Order ID" />
-            <Button onClick={handleVerifyByOrder} disabled={!orderId || loading}>
-              {loading ? "Verifying..." : "Verify"}
-            </Button>
+          <div>
+            <label className="text-sm font-medium">Role</label>
+            <Badge variant="outline">{user.role}</Badge>
           </div>
-          {chainInfo && (
-            <div className="mt-3 text-xs text-muted-foreground">
-              <div>Events: <span className="font-medium text-foreground">{chainInfo.events}</span></div>
-              <div className="break-all">Final hash: <span className="font-mono">{chainInfo.lastHash}</span></div>
-              <div className="mt-1">
-                <Link href={`/scan/${orderId}`} className="underline">Open public scan</Link>
+          <div>
+            <label className="text-sm font-medium">Email</label>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+          </div>
+          {user.location && (
+            <div>
+              <label className="text-sm font-medium">Location</label>
+              <p className="text-sm text-muted-foreground">{user.location}</p>
+            </div>
+          )}
+        </div>
+        <div>
+          <label className="text-sm font-medium">Public Hash ID</label>
+          <p className="text-xs font-mono bg-gray-50 p-2 rounded break-all">
+            {user.publicHashId}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderProductInfo = (product: any) => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          Product Information
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium">Crop Type</label>
+            <p className="text-sm text-muted-foreground">{product.cropType}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Quantity</label>
+            <p className="text-sm text-muted-foreground">{product.quantity} kg</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Price per kg</label>
+            <p className="text-sm text-muted-foreground">₹{product.pricePerKg}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Location</label>
+            <p className="text-sm text-muted-foreground">{product.location}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Harvest Date</label>
+            <p className="text-sm text-muted-foreground">
+              {new Date(product.harvestDate).toLocaleDateString()}
+            </p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Status</label>
+            <Badge variant={product.status === "AVAILABLE" ? "default" : "secondary"}>
+              {product.status}
+            </Badge>
+          </div>
+        </div>
+        <div>
+          <label className="text-sm font-medium">Product Hash ID</label>
+          <p className="text-xs font-mono bg-gray-50 p-2 rounded break-all">
+            {product.productHashId}
+          </p>
+        </div>
+        {product.farmer && (
+          <>
+            <Separator />
+            <div>
+              <label className="text-sm font-medium">Farmer</label>
+              <div className="mt-2 space-y-2">
+                <p className="text-sm"><strong>Name:</strong> {product.farmer.name}</p>
+                {product.farmer.publicHashId && (
+                  <div>
+                    <label className="text-sm font-medium">Farmer Hash ID</label>
+                    <p className="text-xs font-mono bg-gray-50 p-2 rounded break-all">
+                      {product.farmer.publicHashId}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+
+  const renderOrderChain = (data: any) => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Order Information
+            {data.verified !== undefined && (
+              <div className="ml-auto flex items-center gap-2">
+                {data.verified ? (
+                  <CheckCircle className="h-5 w-5 text-green-500" />
+                ) : (
+                  <XCircle className="h-5 w-5 text-red-500" />
+                )}
+                <span className="text-sm font-medium">
+                  {data.verified ? "Verified" : "Integrity Issue"}
+                </span>
+              </div>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Order ID</label>
+              <p className="text-sm font-mono text-muted-foreground">{data.order.id}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Status</label>
+              <Badge variant="outline">{data.order.status}</Badge>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Quantity</label>
+              <p className="text-sm text-muted-foreground">{data.order.quantity} kg</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Total Price</label>
+              <p className="text-sm text-muted-foreground">₹{data.order.totalPrice}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium">Buyer</label>
+              <div className="space-y-1">
+                <p className="text-sm">{data.buyer.name}</p>
+                {data.buyer.publicHashId && (
+                  <p className="text-xs font-mono text-muted-foreground break-all">
+                    {data.buyer.publicHashId}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Farmer</label>
+              <div className="space-y-1">
+                <p className="text-sm">{data.farmer.name}</p>
+                {data.farmer.publicHashId && (
+                  <p className="text-xs font-mono text-muted-foreground break-all">
+                    {data.farmer.publicHashId}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {data.transporter && (
+            <div>
+              <label className="text-sm font-medium">Transporter</label>
+              <div className="space-y-1">
+                <p className="text-sm">{data.transporter.name}</p>
+                {data.transporter.publicHashId && (
+                  <p className="text-xs font-mono text-muted-foreground break-all">
+                    {data.transporter.publicHashId}
+                  </p>
+                )}
               </div>
             </div>
           )}
+
+          <div>
+            <label className="text-sm font-medium">Product</label>
+            <div className="space-y-1">
+              <p className="text-sm">{data.listing.cropType}</p>
+              {data.listing.productHashId && (
+                <p className="text-xs font-mono text-muted-foreground break-all">
+                  {data.listing.productHashId}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">Chain Hash</label>
+            <p className="text-xs font-mono bg-gray-50 p-2 rounded break-all">
+              {data.lastHash}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Provenance Timeline</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ProvenanceTimeline events={data.events} verified={data.verified || false} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Verify Hash</h1>
+          <p className="text-muted-foreground">
+            Enter a hash to verify and view the complete provenance chain
+          </p>
+        </div>
+
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <Input
+                  placeholder="Enter hash (order ID, chain hash, product hash, or user hash)"
+                  value={hash}
+                  onChange={(e) => setHash(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && verifyHash()}
+                />
+              </div>
+              <Button onClick={verifyHash} disabled={loading}>
+                {loading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+                {loading ? "Verifying..." : "Verify"}
+              </Button>
+            </div>
+          </CardContent>
         </Card>
 
-        <Card className="p-6 space-y-3">
-          <h2 className="font-semibold">Verify by Pasting Events (JSON)</h2>
-          <Textarea
-            value={eventsJson}
-            onChange={(e) => setEventsJson(e.target.value)}
-            placeholder='[
-  { "index": 0, "type": "ORDER_CREATED", "prevHash": "GENESIS", "hash": "...", "payload": { "orderId": "...", "at": "..." } },
-  { "index": 1, "type": "PAYMENT_CONFIRMED", "prevHash": "...", "hash": "...", "payload": { "orderId": "...", "at": "..." } }
-]'
-            className="min-h-48"
-          />
-          <Button onClick={handleVerifyOffline} disabled={!eventsJson || loading}>
-            {loading ? "Verifying..." : "Verify Offline"}
-          </Button>
-        </Card>
+        {error && (
+          <Card className="mb-8 border-red-200">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 text-red-600">
+                <XCircle className="h-5 w-5" />
+                <span>{error}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {result && (
-          <Card className="p-4 text-sm">
-            <div className="whitespace-pre-wrap">{result}</div>
-          </Card>
+          <div className="space-y-6">
+            {result.type === "user" && renderUserInfo(result.data)}
+            {result.type === "product" && renderProductInfo(result.data)}
+            {(result.type === "order_chain" || result.type === "chain_hash") &&
+              renderOrderChain(result.data)}
+          </div>
         )}
       </div>
     </div>
   );
 }
-
-

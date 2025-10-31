@@ -183,8 +183,16 @@ export async function getBuyerOrders(buyerId: string) {
                 id: true,
                 name: true,
                 location: true,
+                publicHashId: true,
               },
             },
+          },
+        },
+        buyer: {
+          select: {
+            id: true,
+            name: true,
+            publicHashId: true,
           },
         },
         shipment: {
@@ -194,6 +202,7 @@ export async function getBuyerOrders(buyerId: string) {
                 id: true,
                 name: true,
                 phone: true,
+                publicHashId: true,
               },
             },
           },
@@ -218,12 +227,23 @@ export async function getFarmerOrders(farmerId: string) {
       },
       orderBy: { createdAt: "desc" },
       include: {
-        listing: true,
+        listing: {
+          include: {
+            farmer: {
+              select: {
+                id: true,
+                name: true,
+                publicHashId: true,
+              },
+            },
+          },
+        },
         buyer: {
           select: {
             id: true,
             name: true,
             phone: true,
+            publicHashId: true,
           },
         },
         shipment: {
@@ -233,6 +253,7 @@ export async function getFarmerOrders(farmerId: string) {
                 id: true,
                 name: true,
                 phone: true,
+                publicHashId: true,
               },
             },
           },
@@ -295,6 +316,7 @@ export async function getMarketplace(filters?: {
             name: true,
             location: true,
             phone: true,
+            publicHashId: true,
           },
         },
       },

@@ -165,6 +165,11 @@ export async function getAvailableJobs() {
       },
       include: {
         listing: {
+          select: {
+            cropType: true,
+            location: true,
+            productHashId: true,
+          },
           include: {
             farmer: {
               select: {
@@ -172,6 +177,7 @@ export async function getAvailableJobs() {
                 name: true,
                 location: true,
                 phone: true,
+                publicHashId: true,
               },
             },
           },
@@ -181,6 +187,7 @@ export async function getAvailableJobs() {
             id: true,
             name: true,
             address: true,
+            publicHashId: true,
           },
         },
       },

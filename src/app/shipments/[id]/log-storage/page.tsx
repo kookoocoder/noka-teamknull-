@@ -32,7 +32,7 @@ export default async function LogStoragePage({
   const hasAccess =
     shipment.transporterId === session.user.id ||
     shipment.order.buyerId === session.user.id ||
-    shipment.order.listing.farmerId === session.user.id;
+    shipment.order.listing.farmer.id === session.user.id;
 
   if (!hasAccess) {
     redirect("/dashboard");

@@ -14,9 +14,11 @@ interface ProduceCardProps {
     location: string;
     status: string;
     description?: string | null;
+    productHashId?: string | null;
     farmer?: {
       name: string;
       location: string | null;
+      publicHashId?: string | null;
     };
   };
   showFarmer?: boolean;
@@ -58,6 +60,23 @@ export function ProduceCard({ listing, showFarmer = false, actionButton }: Produ
         {showFarmer && listing.farmer && (
           <div className="text-sm text-muted-foreground">
             <span className="font-medium">Farmer:</span> {listing.farmer.name}
+            {listing.farmer.publicHashId && (
+              <div className="mt-1">
+                <span className="font-medium">Hash:</span>
+                <p className="text-xs text-gray-600 font-mono break-all">
+                  {listing.farmer.publicHashId}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {listing.productHashId && (
+          <div className="text-sm text-muted-foreground">
+            <span className="font-medium">Product Hash:</span>
+            <p className="text-xs text-gray-600 font-mono break-all">
+              {listing.productHashId}
+            </p>
           </div>
         )}
 

@@ -33,6 +33,11 @@ export default async function JobDetailPage({
     where: { id },
     include: {
       listing: {
+        select: {
+          cropType: true,
+          location: true,
+          productHashId: true,
+        },
         include: {
           farmer: {
             select: {
@@ -40,6 +45,7 @@ export default async function JobDetailPage({
               name: true,
               location: true,
               phone: true,
+              publicHashId: true,
             },
           },
         },
@@ -50,6 +56,7 @@ export default async function JobDetailPage({
           name: true,
           phone: true,
           address: true,
+          publicHashId: true,
         },
       },
       shipment: true,
@@ -92,6 +99,29 @@ export default async function JobDetailPage({
                     <Package className="h-4 w-4 text-muted-foreground" />
                     <span>{order.quantity} kg</span>
                   </div>
+
+                  {/* Hash Information */}
+                  {order.listing.productHashId && (
+                    <div className="pt-2 border-t">
+                      <div className="text-sm text-muted-foreground">
+                        <span className="font-medium">Product Hash:</span>
+                        <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                          {order.listing.productHashId}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {order.listing.farmer.publicHashId && (
+                    <div className="pt-2 border-t">
+                      <div className="text-sm text-muted-foreground">
+                        <span className="font-medium">Farmer Hash:</span>
+                        <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                          {order.listing.farmer.publicHashId}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -112,6 +142,18 @@ export default async function JobDetailPage({
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-muted-foreground" />
                       <span>{order.buyer.phone}</span>
+                    </div>
+                  )}
+
+                  {/* Hash Information */}
+                  {order.buyer.publicHashId && (
+                    <div className="pt-2 border-t">
+                      <div className="text-sm text-muted-foreground">
+                        <span className="font-medium">Buyer Hash:</span>
+                        <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                          {order.buyer.publicHashId}
+                        </p>
+                      </div>
                     </div>
                   )}
                 </CardContent>
@@ -205,6 +247,29 @@ export default async function JobDetailPage({
                   <Package className="h-4 w-4 text-muted-foreground" />
                   <span>{shipment.order.quantity} kg</span>
                 </div>
+
+                {/* Hash Information */}
+                {shipment.order.listing.productHashId && (
+                  <div className="pt-2 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-medium">Product Hash:</span>
+                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                        {shipment.order.listing.productHashId}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {shipment.order.listing.farmer.publicHashId && (
+                  <div className="pt-2 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-medium">Farmer Hash:</span>
+                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                        {shipment.order.listing.farmer.publicHashId}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -225,6 +290,29 @@ export default async function JobDetailPage({
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <span>{shipment.order.buyer.phone}</span>
+                  </div>
+                )}
+
+                {/* Hash Information */}
+                {shipment.order.buyer.publicHashId && (
+                  <div className="pt-2 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-medium">Buyer Hash:</span>
+                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                        {shipment.order.buyer.publicHashId}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {shipment.transporter?.publicHashId && (
+                  <div className="pt-2 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      <span className="font-medium">Transporter Hash:</span>
+                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                        {shipment.transporter.publicHashId}
+                      </p>
+                    </div>
                   </div>
                 )}
               </CardContent>

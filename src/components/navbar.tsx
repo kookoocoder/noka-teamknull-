@@ -56,11 +56,18 @@ export async function Navbar() {
 
           <div className="flex items-center gap-4">
             {session.user.role === "BUYER" && (
-              <Link href="/marketplace">
-                <Button variant="ghost" size="sm">
-                  Marketplace
-                </Button>
-              </Link>
+              <>
+                <Link href="/marketplace">
+                  <Button variant="ghost" size="sm">
+                    Marketplace
+                  </Button>
+                </Link>
+                <Link href="/verify">
+                  <Button variant="ghost" size="sm">
+                    Verify Hash
+                  </Button>
+                </Link>
+              </>
             )}
             
             <RealTimeNotifications userId={session.user.id} />

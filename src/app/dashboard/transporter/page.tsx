@@ -30,8 +30,25 @@ export default async function TransporterDashboard() {
     getTransporterShipments(session.user.id),
   ]);
 
-  const jobs = jobsResult.success ? jobsResult.jobs : [];
-  const shipments = shipmentsResult.success ? shipmentsResult.shipments : [];
+    const jobs = jobsResult.success ? jobsResult.jobs : [];
+    const shipments = shipmentsResult.success ? shipmentsResult.shipments : [];
+
+    // Add hash information to jobs
+    const jobsWithHashes = jobs?.map(job => ({
+      ...job,
+      listing: {
+        ...job.listing,
+        productHashId: job.listing?.productHashId,
+        farmer: {
+          ...job.listing?.farmer,
+          publicHashId: job.listing?.farmer?.publicHashId,
+        },
+      },
+      buyer: {
+        ...job.buyer,
+        publicHashId: job.buyer?.publicHashId,
+      },
+    })) || [];
 
   const activeShipments = shipments?.filter((s) => ["PICKED_UP", "IN_TRANSIT"].includes(s.status)) || [];
   const completedShipments = shipments?.filter((s) => s.status === "DELIVERED") || [];
@@ -70,9 +87,9 @@ export default async function TransporterDashboard() {
           </TabsList>
 
           <TabsContent value="available" className="space-y-4">
-            {jobs && jobs.length > 0 ? (
+            {jobsWithHashes && jobsWithHashes.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2">
-                {jobs.map((job) => (
+                {jobsWithHashes.map((job) => (
                   <Card key={job.id} className="md:col-span-1">
                     <CardHeader>
                       <div className="flex justify-between items-start">
@@ -112,6 +129,36 @@ export default async function TransporterDashboard() {
                       <div className="flex items-center gap-2 text-sm">
                         <span className="font-medium">Total Price:</span>
                         <span className="text-muted-foreground">₹{job.totalPrice.toFixed(2)}</span>
+                      </div>
+
+                      {/* Hash Information */}
+                      <div className="pt-2 border-t space-y-2">
+                        {job.listing.productHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Product Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {job.listing.productHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {job.listing.farmer?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Farmer Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {job.listing.farmer.publicHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {job.buyer?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Buyer Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {job.buyer.publicHashId}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                     <CardFooter>
@@ -176,6 +223,45 @@ export default async function TransporterDashboard() {
                           <span>Current: {shipment.currentLocation}</span>
                         </div>
                       )}
+
+                      {/* Hash Information */}
+                      <div className="pt-2 border-t space-y-2">
+                        {shipment.order.listing.productHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Product Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.order.listing.productHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {shipment.order.listing.farmer?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Farmer Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.order.listing.farmer.publicHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {shipment.order.buyer?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Buyer Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.order.buyer.publicHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {shipment.transporter?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Transporter Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.transporter.publicHashId}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </CardContent>
                     <CardFooter>
                       <Link href={`/jobs/${shipment.id}`} className="w-full">
@@ -226,6 +312,45 @@ export default async function TransporterDashboard() {
                             <span className="text-muted-foreground">— {shipment.order.deliveryAddress}</span>
                           </div>
                         </div>
+                      </div>
+
+                      {/* Hash Information */}
+                      <div className="pt-2 border-t space-y-2">
+                        {shipment.order.listing.productHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Product Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.order.listing.productHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {shipment.order.listing.farmer?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Farmer Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.order.listing.farmer.publicHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {shipment.order.buyer?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Buyer Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.order.buyer.publicHashId}
+                            </p>
+                          </div>
+                        )}
+
+                        {shipment.transporter?.publicHashId && (
+                          <div className="text-sm text-muted-foreground">
+                            <span className="font-medium">Transporter Hash:</span>
+                            <p className="text-xs text-gray-600 font-mono break-all">
+                              {shipment.transporter.publicHashId}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                     <CardFooter>

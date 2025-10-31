@@ -13,6 +13,15 @@ interface OrderCardProps {
     listing: {
       cropType: string;
       location: string;
+      productHashId?: string | null;
+      farmer?: {
+        name: string;
+        publicHashId?: string | null;
+      };
+    };
+    buyer?: {
+      name: string;
+      publicHashId?: string | null;
     };
   };
   showDetails?: boolean;
@@ -46,6 +55,36 @@ export function OrderCard({ order, showDetails = true, actions }: OrderCardProps
 
         <div className="pt-2 border-t">
           <div className="text-xl font-bold">₹{order.totalPrice.toLocaleString()}</div>
+        </div>
+
+        {/* Hash Information */}
+        <div className="pt-2 border-t space-y-2">
+          {order.listing.productHashId && (
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium">Product Hash:</span>
+              <p className="text-xs text-gray-600 font-mono break-all">
+                {order.listing.productHashId}
+              </p>
+            </div>
+          )}
+
+          {order.listing.farmer?.publicHashId && (
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium">Farmer Hash:</span>
+              <p className="text-xs text-gray-600 font-mono break-all">
+                {order.listing.farmer.publicHashId}
+              </p>
+            </div>
+          )}
+
+          {order.buyer?.publicHashId && (
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium">Buyer Hash:</span>
+              <p className="text-xs text-gray-600 font-mono break-all">
+                {order.buyer.publicHashId}
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
       {actions && (
