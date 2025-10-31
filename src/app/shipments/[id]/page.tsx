@@ -74,7 +74,7 @@ export default async function ShipmentDetailPage({
                   <div className="pt-2 border-t">
                     <div className="text-sm text-muted-foreground">
                       <span className="font-medium">Farmer Hash:</span>
-                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                      <p className="text-xs text-muted-foreground font-mono break-all mt-1">
                         {shipment.order.listing.farmer.publicHashId}
                       </p>
                     </div>
@@ -84,7 +84,7 @@ export default async function ShipmentDetailPage({
                   <div className="pt-2 border-t">
                     <div className="text-sm text-muted-foreground">
                       <span className="font-medium">Product Hash:</span>
-                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                      <p className="text-xs text-muted-foreground font-mono break-all mt-1">
                         {shipment.order.listing.productHashId}
                       </p>
                     </div>
@@ -113,7 +113,7 @@ export default async function ShipmentDetailPage({
                   <div className="pt-2 border-t">
                     <div className="text-sm text-muted-foreground">
                       <span className="font-medium">Buyer Hash:</span>
-                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                      <p className="text-xs text-muted-foreground font-mono break-all mt-1">
                         {shipment.order.buyer.publicHashId}
                       </p>
                     </div>
@@ -138,7 +138,7 @@ export default async function ShipmentDetailPage({
                   <div className="pt-2 border-t">
                     <div className="text-sm text-muted-foreground">
                       <span className="font-medium">Transporter Hash:</span>
-                      <p className="text-xs text-gray-600 font-mono break-all mt-1">
+                      <p className="text-xs text-muted-foreground font-mono break-all mt-1">
                         {shipment.transporter.publicHashId}
                       </p>
                     </div>
@@ -186,7 +186,7 @@ export default async function ShipmentDetailPage({
                   <div className="mt-6 pt-4 border-t">
                     <div className="text-sm">
                       <span className="font-medium">Chain Hash:</span>
-                      <p className="text-xs font-mono bg-gray-50 p-2 rounded break-all mt-1">
+                      <p className="text-xs font-mono bg-muted p-2 rounded break-all mt-1 text-foreground">
                         {shipment.order.provenanceChain.lastHash}
                       </p>
                     </div>
@@ -249,7 +249,7 @@ export default async function ShipmentDetailPage({
           )}
 
           <div className="flex gap-4">
-            <ShipmentPDFExporter shipmentId={shipment.id} />
+            <ShipmentPDFExporter shipmentId={shipment.id} shipmentData={shipment} />
             {session.user.role === "TRANSPORTER" && shipment.transporterId === session.user.id && (
               <Link href={`/shipments/${shipment.id}/log-storage`} className="flex-1">
                 <Button className="w-full">Log Storage Conditions</Button>
@@ -266,7 +266,6 @@ export default async function ShipmentDetailPage({
     </div>
   );
 }
-
 
 function ProvenanceEventCard({ event, index }: { event: any; index: number }) {
   const getEventIcon = (type: string) => {
@@ -348,12 +347,12 @@ function ProvenanceEventCard({ event, index }: { event: any; index: number }) {
             <div className="text-xs space-y-1">
               <div>
                 <span className="font-medium">Event Hash:</span>
-                <p className="font-mono break-all text-gray-600 mt-1">{event.hash}</p>
+                <p className="font-mono break-all text-muted-foreground mt-1">{event.hash}</p>
               </div>
               {event.prevHash !== "GENESIS" && (
                 <div>
                   <span className="font-medium">Previous Hash:</span>
-                  <p className="font-mono break-all text-gray-600 mt-1">{event.prevHash}</p>
+                  <p className="font-mono break-all text-muted-foreground mt-1">{event.prevHash}</p>
                 </div>
               )}
             </div>

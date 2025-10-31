@@ -37,7 +37,7 @@ export async function Navbar() {
   const Icon = config?.icon || Home;
 
   return (
-    <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="border-b border-border bg-primary text-primary-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-6">
@@ -47,7 +47,7 @@ export async function Navbar() {
             </Link>
             
             {config && (
-              <div className={`flex items-center gap-2 text-sm ${config.color}`}>
+              <div className={`flex items-center gap-2 text-xs sm:text-sm px-2.5 py-1 rounded-full bg-farmer text-primary-foreground shadow-sm ${config.color}`}>
                 <Icon className="h-4 w-4" />
                 <span className="font-medium">{config.label}</span>
               </div>
@@ -58,12 +58,12 @@ export async function Navbar() {
             {session.user.role === "BUYER" && (
               <>
                 <Link href="/marketplace">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="secondary" size="sm">
                     Marketplace
                   </Button>
                 </Link>
                 <Link href="/verify">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="secondary" size="sm">
                     Verify Hash
                   </Button>
                 </Link>
@@ -73,7 +73,7 @@ export async function Navbar() {
             <RealTimeNotifications userId={session.user.id} />
 
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground hidden sm:block">
+              <span className="text-sm opacity-90 hidden sm:block">
                 {session.user.name}
               </span>
               <form
@@ -85,7 +85,7 @@ export async function Navbar() {
                   redirect("/auth");
                 }}
               >
-                <Button type="submit" variant="outline" size="sm">
+                <Button type="submit" variant="secondary" size="sm">
                   Sign Out
                 </Button>
               </form>

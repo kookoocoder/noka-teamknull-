@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProduceCard } from "@/components/produce-card";
 import { OrderCard } from "@/components/order-card";
 import { VerifyPill } from "@/components/verify-pill";
-import { handleAcceptOrder, handleRejectOrder } from "./actions";
 
 interface FarmerDashboardClientProps {
   listings: any[];
@@ -17,6 +16,8 @@ interface FarmerDashboardClientProps {
   activeOrders: any[];
   success?: string;
   error?: string;
+  handleAcceptOrder: (formData: FormData) => Promise<void>;
+  handleRejectOrder: (formData: FormData) => Promise<void>;
 }
 
 export function FarmerDashboardClient({
@@ -25,6 +26,8 @@ export function FarmerDashboardClient({
   activeOrders,
   success,
   error,
+  handleAcceptOrder,
+  handleRejectOrder,
 }: FarmerDashboardClientProps) {
   useEffect(() => {
     if (success) {

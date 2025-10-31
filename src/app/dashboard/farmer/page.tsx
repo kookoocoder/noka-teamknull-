@@ -3,12 +3,36 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { getFarmerListings } from "@/app/actions/produce";
-import { getFarmerOrders } from "@/app/actions/orders";
+import { getFarmerOrders, acceptOrder, rejectOrder } from "@/app/actions/orders";
 import { RealTimeJobs } from "@/components/real-time-jobs";
 import { FarmerDashboardClient } from "./farmer-dashboard-client";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+async function handleAcceptOrder(formData: FormData) {
+  "use server";
+  const orderId = formData.get("orderId") as string;
+  const result = await acceptOrder(orderId);
+
+  if (!result.success) {
+    redirect(`/dashboard/farmer?error=${encodeURIComponent(result.error || "Failed to accept order")}`);
+  }
+
+  redirect(`/dashboard/farmer?success=${encodeURIComponent("Order accepted successfully")}`);
+}
+
+async function handleRejectOrder(formData: FormData) {
+  "use server";
+  const orderId = formData.get("orderId") as string;
+  const result = await rejectOrder(orderId);
+
+  if (!result.success) {
+    redirect(`/dashboard/farmer?error=${encodeURIComponent(result.error || "Failed to reject order")}`);
+  }
+
+  redirect(`/dashboard/farmer?success=${encodeURIComponent("Order rejected successfully")}`);
+}
 
 export default async function FarmerDashboard({
   searchParams,
@@ -46,6 +70,8 @@ export default async function FarmerDashboard({
         activeOrders={activeOrders}
         success={params.success}
         error={params.error}
+        handleAcceptOrder={handleAcceptOrder}
+        handleRejectOrder={handleRejectOrder}
       />
     </div>
   );
